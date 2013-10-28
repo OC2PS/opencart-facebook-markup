@@ -1,0 +1,65 @@
+<modification>
+	<id><![CDATA[@tik Facebook OpenGraph Markup]]></id>
+	<version><![CDATA[1.0]]></version>
+	<vqmver><![CDATA[2.3.2]]></vqmver>
+	<author><![CDATA[OC2PS]]></author>
+	<file name="catalog/view/theme/*/template/common/header.tpl">
+		<operation info="Markup Title and Sitename">
+			<search position="replace" error="skip"><![CDATA[<base href="<?php echo $base; ?>" />]]></search>
+			<add><![CDATA[<base href="<?php echo $base; ?>" />
+			<meta property="og:title" content="<?php echo $title; ?>" />
+			<meta property="og:site_name" content="<?php echo $name; ?>" />
+			<?php if (is_array($this->document->getFBOG())) { ?>
+			<?php foreach ($this->document->getFBOG() as $fbog) { ?>
+			<meta property="<?php echo $fbog['meta'] ?>" content="<?php echo $fbog['content']; ?>" />
+			<?php } } ?>
+			]]></add>
+		</operation>
+		<operation info="Markup URL">
+			<search position="replace" error="skip"><![CDATA[<?php foreach ($links as $link) { ?>]]></search>
+			<add><![CDATA[<?php foreach ($links as $link) { ?>
+			<?php if ($link['rel'] == "canonical") { ?><meta property="og:url" content="<?php echo $link['href']; ?>" /><?php } ?>
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/controller/product/product.php">
+		<operation>
+			<search position="replace"><![CDATA[$this->document->setTitle($product_info['name']);]]></search>
+			<add><![CDATA[$this->document->setTitle($product_info['name']);
+			$this->document->setFBOG('og:type', 'product');
+			$markupimage = substr($product_info['image'],0,strrpos($product_info['image'],".")) . "-" . $this->config->get('config_image_popup_width') . "x" . $this->config->get('config_image_popup_height') . substr($product_info['image'],strrpos($product_info['image'],"."));
+			$this->document->setFBOG('og:image', HTTP_SERVER . 'image/cache/' . $markupimage);
+			$this->document->setFBOG('og:description', $product_info['meta_description']);]]></add>
+		</operation>
+	</file>
+	<file name="catalog/controller/product/category.php">
+		<operation>
+			<search position="replace"><![CDATA[$this->document->setTitle($category_info['name']);]]></search>
+			<add><![CDATA[$this->document->setTitle($category_info['name']);
+			$this->document->setFBOG('og:type', 'company');
+			$this->document->setFBOG('og:image', HTTP_SERVER . 'image/' . $category_info['image']);
+			$this->document->setFBOG('og:description', $category_info['meta_description']);]]></add>
+		</operation>
+	</file>	
+	<file name="system/library/document.php">
+		<operation>
+			<search position="replace"><![CDATA[public function getKeywords() {]]></search>
+			<add><![CDATA[public function setFBOG($meta, $content) {
+				$this->fbog[] = array(
+				'meta'   => $meta,
+				'content' => $content );
+			}
+	
+			public function getFBOG() {
+				return $this->fbog;
+			}
+			
+			public function getKeywords() {]]></add>
+		</operation>		
+		<operation>
+			<search position="replace"><![CDATA[private $scripts = array();]]></search>
+			<add><![CDATA[private $scripts = array();
+			private $fbog = array();]]></add>
+		</operation>		
+	</file>
+</modification>
