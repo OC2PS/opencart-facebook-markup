@@ -19,4 +19,4 @@ Because this is a vQmod, no core files are touched, and the changes should carry
 
 Documentation and Support
 =========================
-http://forum.opencart.com/viewtopic.php?f=119&t=113139
+http://forum.opencart.com/viewtopic.php?f=23&t=113139

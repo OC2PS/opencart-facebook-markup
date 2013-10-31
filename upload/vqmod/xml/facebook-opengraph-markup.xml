@@ -1,6 +1,6 @@
 <modification>
 	<id><![CDATA[@tik Facebook OpenGraph and Twitter Cards Markup]]></id>
-	<version><![CDATA[1.1]]></version>
+	<version><![CDATA[1.2]]></version>
 	<vqmver><![CDATA[2.3.2]]></vqmver>
 	<author><![CDATA[OC2PS]]></author>
 	<file name="catalog/view/theme/*/template/common/header.tpl">
@@ -13,7 +13,6 @@
 			<?php foreach ($this->document->getFBOG() as $fbog) { ?>
 			<meta property="<?php echo $fbog['meta'] ?>" content="<?php echo $fbog['content']; ?>" />
 			<?php } } ?>
-			<meta name="twitter:card" content="summary">
 			<meta name="twitter:title" content="<?php echo $title; ?>">
 			]]></add>
 		</operation>
@@ -32,11 +31,20 @@
 			<search position="replace"><![CDATA[$this->document->setTitle($product_info['name']);]]></search>
 			<add><![CDATA[$this->document->setTitle($product_info['name']);
 			$this->document->setFBOG('og:type', 'product');
-			$markupimage = substr($product_info['image'],0,strrpos($product_info['image'],".")) . "-" . $this->config->get('config_image_popup_width') . "x" . $this->config->get('config_image_popup_height') . substr($product_info['image'],strrpos($product_info['image'],"."));
+			$popw = $this->config->get('config_image_popup_width');
+			$poph = $this->config->get('config_image_popup_height');
+			$markupimage = substr($product_info['image'],0,strrpos($product_info['image'],".")) . "-" . $popw . "x" . $poph . substr($product_info['image'],strrpos($product_info['image'],"."));
 			$this->document->setFBOG('og:image', HTTP_SERVER . 'image/cache/' . $markupimage);
 			$this->document->setFBOG('og:description', $product_info['meta_description']);
+			$this->document->setFBOG('twitter:card', 'product');			
 			$this->document->setFBOG('twitter:image', HTTP_SERVER . 'image/cache/' . $markupimage);
+			$this->document->setFBOG('twitter:image:width', $popw);
+			$this->document->setFBOG('twitter:image:height', $poph);
 			$this->document->setFBOG('twitter:description', $product_info['meta_description']);
+			$this->document->setFBOG('twitter:label1', $this->language->get('text_price'));
+			$this->document->setFBOG('twitter:data1', $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax'))));
+			$this->document->setFBOG('twitter:label2', $this->language->get('text_stock'));
+			$this->document->setFBOG('twitter:data2', $this->language->get('text_instock'));
 			]]></add>
 		</operation>
 	</file>
@@ -47,6 +55,7 @@
 			$this->document->setFBOG('og:type', 'company');
 			$this->document->setFBOG('og:image', HTTP_SERVER . 'image/' . $category_info['image']);
 			$this->document->setFBOG('og:description', $category_info['meta_description']);
+			$this->document->setFBOG('twitter:card', 'summary');
 			$this->document->setFBOG('twitter:image', HTTP_SERVER . 'image/' . $category_info['image']);
 			$this->document->setFBOG('twitter:description', $category_info['meta_description']);]]></add>
 		</operation>
